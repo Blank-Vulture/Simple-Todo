@@ -41,17 +41,19 @@ jobs:
           ./gradlew assembleDebug
 
       - name: Prepare APK for Release
+        id: prepare
         run: |
           # Copy and rename APK
           cp android/app/build/outputs/apk/debug/app-debug.apk simple-todo.apk
           # Get short commit SHA for release tag
-          echo "RELEASE_TAG=build-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          RELEASE_TAG="build-$(git rev-parse --short HEAD)"
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
 
       - name: Upload APK to Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          name: "Android APK - ${{ env.RELEASE_TAG }}"
+          tag_name: ${{ steps.prepare.outputs.release_tag }}
+          name: "Android APK - ${{ steps.prepare.outputs.release_tag }}"
           body: |
             Auto-generated Android Debug APK
             Commit: ${{ github.sha }}
