@@ -39,6 +39,14 @@ jobs:
       - name: Build Web
         run: npx expo export -p web
 
+      - name: Fix paths for GitHub Pages subdirectory
+        run: |
+          # Add base tag to HTML
+          sed -i 's|<head>|<head><base href="/Simple-Todo/">|' dist/index.html
+          # Fix absolute paths in HTML to be relative
+          sed -i 's|src="/_expo/|src="_expo/|g' dist/index.html
+          sed -i 's|href="/favicon|href="favicon|g' dist/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
