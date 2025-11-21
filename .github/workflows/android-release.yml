@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,13 +40,25 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Prepare APK for Release
+        run: |
+          # Copy and rename APK
+          cp android/app/build/outputs/apk/debug/app-debug.apk simple-todo.apk
+          # Get short commit SHA for release tag
+          echo "RELEASE_TAG=build-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Upload APK to Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/debug/app-debug.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "Android APK - ${{ env.RELEASE_TAG }}"
+          body: |
+            Auto-generated Android Debug APK
+            Commit: ${{ github.sha }}
+            Built on: ${{ github.run_number }}
+          files: simple-todo.apk
+          draft: false
+          prerelease: false
       
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
