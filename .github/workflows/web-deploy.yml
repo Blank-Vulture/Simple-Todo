@@ -39,12 +39,12 @@ jobs:
       - name: Build Web
         run: npx expo export -p web
 
-      - name: Fix paths for GitHub Pages subdirectory
+      - name: Configure for GitHub Pages SPA
         run: |
-          # Fix absolute paths in HTML to be relative
-          sed -i 's|src="/_expo/|src="_expo/|g' dist/index.html
-          sed -i 's|href="/favicon|href="favicon|g' dist/index.html
-          sed -i 's|href="/_sitemap"|href="_sitemap"|g' dist/index.html
+          # Prevent Jekyll processing (allows _expo folder)
+          touch dist/.nojekyll
+          # Copy index.html to 404.html for SPA routing
+          cp dist/index.html dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
