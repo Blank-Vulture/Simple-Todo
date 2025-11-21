@@ -34,17 +34,31 @@ jobs:
       - name: Prebuild
         run: npx expo prebuild --platform android
 
-      - name: Build APK
+      - name: Bundle JavaScript
+        run: npx expo export:embed --platform android
+
+      - name: Configure Release Signing
+        run: |
+          cd android
+          # Create gradle.properties for release signing using debug keystore
+          cat >> gradle.properties << EOF
+          MYAPP_RELEASE_STORE_FILE=debug.keystore
+          MYAPP_RELEASE_KEY_ALIAS=androiddebugkey
+          MYAPP_RELEASE_STORE_PASSWORD=android
+          MYAPP_RELEASE_KEY_PASSWORD=android
+          EOF
+
+      - name: Build Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
       - name: Prepare APK for Release
         id: prepare
         run: |
           # Copy and rename APK
-          cp android/app/build/outputs/apk/debug/app-debug.apk simple-todo.apk
+          cp android/app/build/outputs/apk/release/app-release.apk simple-todo.apk
           # Get short commit SHA for release tag
           RELEASE_TAG="build-$(git rev-parse --short HEAD)"
           echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
@@ -55,9 +69,11 @@ jobs:
           tag_name: ${{ steps.prepare.outputs.release_tag }}
           name: "Android APK - ${{ steps.prepare.outputs.release_tag }}"
           body: |
-            Auto-generated Android Debug APK
+            Auto-generated Android Release APK (Standalone - Works Offline)
             Commit: ${{ github.sha }}
             Built on: ${{ github.run_number }}
+            
+            This is a standalone release build that works completely offline without requiring Metro bundler.
           files: simple-todo.apk
           draft: false
           prerelease: false
@@ -65,5 +81,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
