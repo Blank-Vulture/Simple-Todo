@@ -228,6 +228,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 12,
         elevation: 8,
+        ...(Platform.OS === 'web' && {
+            maxWidth: 600,
+            width: '100%',
+        }),
     },
     input: {
         flex: 1,
