@@ -112,52 +112,54 @@ export const HomeScreen: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F2F2F7" />
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Simple Todo</Text>
-                    <TouchableOpacity onPress={handleGlobalBulkDelete} style={styles.headerButton}>
-                        <Trash2 size={22} color={hasCompletedTodos ? "#007AFF" : "#8E8E93"} />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.listContainer}>
-                    <TodoList
-                        todos={todos}
-                        onToggle={toggleTodo}
-                        onDelete={deleteTodo}
-                        onEdit={startEditing}
-                    />
-                </View>
-
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-                    style={styles.inputWrapper}
-                >
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={editingId ? "Edit task..." : "New Task"}
-                            placeholderTextColor="#8E8E93"
-                            value={text}
-                            onChangeText={setText}
-                            onSubmitEditing={addTodo}
-                            returnKeyType="done"
-                        />
-                        <TouchableOpacity
-                            style={[styles.addButton, !text.trim() && styles.addButtonDisabled]}
-                            onPress={addTodo}
-                            disabled={!text.trim()}
-                            activeOpacity={0.8}
-                        >
-                            <Plus size={24} color="#fff" strokeWidth={2.5} />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+            >
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>Simple Todo</Text>
+                        <TouchableOpacity onPress={handleGlobalBulkDelete} style={styles.headerButton}>
+                            <Trash2 size={22} color={hasCompletedTodos ? "#007AFF" : "#8E8E93"} />
                         </TouchableOpacity>
                     </View>
-                    {Platform.OS !== 'web' && (
-                        <Text style={styles.hintText}>タスクをスワイプすると個別に削除できるボタンが表示されます</Text>
-                    )}
-                </KeyboardAvoidingView>
-            </View>
+
+                    <View style={styles.listContainer}>
+                        <TodoList
+                            todos={todos}
+                            onToggle={toggleTodo}
+                            onDelete={deleteTodo}
+                            onEdit={startEditing}
+                        />
+                    </View>
+
+                    <View style={styles.inputWrapper}>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder={editingId ? "Edit task..." : "New Task"}
+                                placeholderTextColor="#8E8E93"
+                                value={text}
+                                onChangeText={setText}
+                                onSubmitEditing={addTodo}
+                                returnKeyType="done"
+                            />
+                            <TouchableOpacity
+                                style={[styles.addButton, !text.trim() && styles.addButtonDisabled]}
+                                onPress={addTodo}
+                                disabled={!text.trim()}
+                                activeOpacity={0.8}
+                            >
+                                <Plus size={24} color="#fff" strokeWidth={2.5} />
+                            </TouchableOpacity>
+                        </View>
+                        {Platform.OS !== 'web' && (
+                            <Text style={styles.hintText}>タスクをスワイプすると個別に削除できるボタンが表示されます</Text>
+                        )}
+                    </View>
+                </View>
+            </KeyboardAvoidingView>
 
             <ConfirmationModal
                 visible={modalVisible}
@@ -210,11 +212,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     inputWrapper: {
-        position: 'absolute',
-        bottom: 34,
-        left: 20,
-        right: 20,
+        width: '100%',
         alignItems: 'center',
+        paddingVertical: 10,
+        marginBottom: 10,
     },
     inputContainer: {
         flexDirection: 'row',
